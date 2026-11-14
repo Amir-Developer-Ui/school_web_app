@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block content %}
+<div class="page-head"><div><p class="eyebrow">ویرایش اطلاعات پایه</p><h1>ویرایش کلاس</h1><p class="muted">تغییر نام کلاس، سوابق حضور و غیاب قبلی را حذف نمی‌کند.</p></div><a class="btn secondary" href="{% url 'classes' %}">بازگشت</a></div>
+<section class="panel"><form method="post" class="form-grid">{% csrf_token %}<label>رشته<select name="major">{% for value,label in majors %}<option value="{{ value }}" {% if school_class.major == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label><label>پایه<select name="grade">{% for value,label in grades %}<option value="{{ value }}" {% if school_class.grade == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label><label>بخش / کلاس<input name="section" value="{{ school_class.section }}" placeholder="مثلاً الف"></label><button class="btn primary">ذخیره تغییرات</button></form></section>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}{% block content %}<div class="student-management-page"><div class="page-head"><div><p class="eyebrow">مدیریت دانش‌آموزان</p><h1>{{ school_class }}</h1><p class="muted">{{ students|length }} دانش‌آموز فعال</p></div><a class="btn secondary" href="{% url 'classes' %}">بازگشت</a></div>
+<section class="panel"><h2>افزودن گروهی</h2><p class="muted">هر خط یک نفر؛ نام و نام خانوادگی را با فاصله وارد کنید.</p><form method="post">{% csrf_token %}<input type="hidden" name="action" value="bulk"><textarea name="names" rows="6" placeholder="علی رضایی&#10;محمد احمدی&#10;..."></textarea><button class="btn primary">افزودن فهرست</button></form></section>
+<section class="panel"><h2>افزودن تکی</h2><form method="post" class="form-grid">{% csrf_token %}<input type="hidden" name="action" value="add"><label>نام<input name="first_name" required></label><label>نام خانوادگی<input name="last_name" required></label><label>شماره پرونده (اختیاری)<input name="file_number"></label><button class="btn secondary">افزودن دانش‌آموز</button></form></section>
+<section class="panel student-list-panel">
+  <div class="student-list-heading">
+    <div>
+      <h2>فهرست دانش‌آموزان</h2>
+      <p class="muted">برای مشاهده و ویرایش مشخصات، روی ردیف دانش‌آموز کلیک کنید.</p>
+    </div>
+    <span class="student-count">{{ students|length }} نفر</span>
+  </div>
+  <div class="student-list">
+    {% for s in students %}
+      <details class="student-edit">
+        <summary>
+          <span class="student-summary-main">
+            <span class="student-number">{{ forloop.counter }}</span>
+            <span class="student-summary-name">{{ s }}</span>
+          </span>
+          <span class="student-summary-meta">
+            <span class="student-file-number">شماره پرونده: {{ s.file_number|default:'ثبت نشده' }}</span>
+            <span class="student-edit-hint">ویرایش اطلاعات</span>
+            <span class="student-toggle" aria-hidden="true"></span>
+          </span>
+        </summary>
+        <div class="student-edit-content">
+          <form method="post" class="form-grid student-edit-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="student_id" value="{{ s.id }}">
+            <label>نام<input name="first_name" value="{{ s.first_name }}" required></label>
+            <label>نام خانوادگی<input name="last_name" value="{{ s.last_name }}" required></label>
+            <label>شماره پرونده<input name="file_number" value="{{ s.file_number }}"></label>
+            <label>کلاس<select name="target_class_id">{% for c in all_classes %}<option value="{{ c.id }}" {% if c.id == school_class.id %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></label>
+            <div class="student-actions"><button class="btn primary small" type="submit">ذخیره اطلاعات</button></div>
+          </form>
+          <form method="post" class="delete-student-form" onsubmit="return confirm('دانش‌آموز و سوابق حضور و غیاب وابسته به او حذف شوند؟')">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="student_id" value="{{ s.id }}">
+            <button class="text-danger" type="submit">حذف دانش‌آموز</button>
+          </form>
+        </div>
+      </details>
+    {% empty %}
+      <div class="student-empty">هنوز دانش‌آموزی برای این کلاس ثبت نشده است.</div>
+    {% endfor %}
+  </div>
+</section></div>{% endblock %}

@@ -1,0 +1,1 @@
+function setAll(status){document.querySelectorAll('input[type=radio][value="'+status+'"]').forEach(el=>el.checked=true)}function copyReport(){const el=document.getElementById('reportText');if(!el)return;navigator.clipboard.writeText(el.value).then(()=>alert('متن گزارش کپی شد.')).catch(()=>{el.select();document.execCommand('copy');alert('متن گزارش کپی شد.')})}
