@@ -198,7 +198,8 @@ small {
 .section-head h2 {
   margin: 0
 }
-.section-head > strong {
+
+.section-head>strong {
   background-color: var(--green);
   color: var(--surface);
   padding: 12px;
@@ -493,19 +494,183 @@ textarea {
   line-height: 1.8
 }
 
+/* Incident Management */
+
+.incident-page .incident-create-panel {
+  background: linear-gradient(135deg, #ffffff, #f7f9ff);
+}
+
+.incident-date,
+.incident-count {
+  padding: 8px 13px;
+  border-radius: 9px;
+  background: #edf3ff;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.incident-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.incident-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.incident-list-row:last-child {
+  border-bottom: 0;
+}
+
+.incident-info {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.incident-info strong {
+  display: block;
+  font-size: 14px;
+}
+
+.incident-info small {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+.incident-calendar {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  border-radius: 12px;
+  background: #edf3ff;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.incident-empty {
+  padding: 45px 15px;
+  text-align: center;
+}
+
+.incident-empty-icon {
+  font-size: 35px;
+  margin-bottom: 12px;
+}
+
+.incident-empty h3 {
+  font-size: 15px;
+}
+
+.incident-empty p {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+
+/* Incident Entries Table */
+.incident-page .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+.incident-page table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: right;
+}
+
+.incident-page table th,
+.incident-page table td {
+    padding: 16px 18px;
+    vertical-align: middle;
+    line-height: 1.9;
+    border-bottom: 1px solid var(--line);
+}
+
+.incident-page table th {
+    background: #f5f7fc;
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.incident-page table td {
+    font-size: 13px;
+    color: var(--text);
+}
+
+.incident-page table tbody tr:nth-child(even) {
+    background: #f9faff;
+}
+
+.incident-page table tbody tr:hover {
+    background: #f0f5ff;
+}
+
+.incident-page table th:first-child,
+.incident-page table td:first-child {
+    text-align: center;
+    width: 65px;
+}
+
+.incident-page table td:nth-child(2) {
+    min-width: 170px;
+    font-weight: 600;
+}
+
+.incident-page table td:nth-child(5),
+.incident-page table td:nth-child(6) {
+    min-width: 200px;
+    white-space: normal;
+}
+
+/* Incident Entry Actions */
+.incident-entry-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-width: 130px;
+}
+
+.incident-entry-actions form {
+    margin: 0;
+}
+
+.incident-entry-actions .btn {
+    min-width: 58px;
+    justify-content: center;
+}
+
 @media(max-width:700px) {
   .container {
     margin: 18px auto;
     padding: 0 12px
   }
 
-  .save-btn{
+  .save-btn {
     position: fixed;
     bottom: 1%;
     right: 50%;
     width: 95%;
-    transform: translate(50%,0);
+    transform: translate(50%, 0);
   }
+
   .topbar {
     padding: 0 14px;
     height: 62px
@@ -945,4 +1110,28 @@ textarea {
   .student-management-page .student-edit-content {
     padding: 0 12px 12px;
   }
+}
+
+@media(max-width:700px) {
+    .incident-list-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .incident-list-row .row-actions {
+        width: 100%;
+    }
+
+    .incident-list-row .row-actions .btn {
+        flex: 1;
+    }
+
+    .incident-create-panel .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .incident-entry-actions {
+        min-width: 120px;
+    }
 }

@@ -1,0 +1,166 @@
+
+{% extends 'base.html' %}
+
+{% block title %}برگه ثبت وقایع{% endblock %}
+
+{% block content %}
+<div class="incident-page">
+
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">مدیریت انضباطی هنرستان</p>
+            <h1>برگه ثبت وقایع</h1>
+            <p class="muted">ثبت و پیگیری موارد انضباطی دانش‌آموزان</p>
+        </div>
+
+        <a href="{% url 'incident_sheets' %}" class="btn secondary">
+            بازگشت به فهرست
+        </a>
+    </div>
+
+    <section class="panel">
+        <div class="section-head">
+            <div>
+                <h2>اطلاعات برگه</h2>
+                <p class="muted">تاریخ برگه ثبت وقایع</p>
+            </div>
+            <span class="incident-date">{{ sheet.date }}</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="section-head">
+            <div>
+                <h2>افزودن مورد جدید</h2>
+                <p class="muted">اطلاعات دانش‌آموز و شرح واقعه را وارد کن.</p>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="student_name">نام و نام خانوادگی</label>
+                <input
+                    type="text"
+                    id="student_name"
+                    name="student_name"
+                    maxlength="180"
+                    required
+                    placeholder="نام دانش‌آموز را وارد کن"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="grade">پایه تحصیلی</label>
+                <select id="grade" name="grade" required>
+                    <option value="">انتخاب پایه</option>
+                    {% for value, label in grades %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="major">رشته تحصیلی</label>
+                <select id="major" name="major" required>
+                    <option value="">ابتدا پایه را انتخاب کن</option>
+                    {% for value, label in majors %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="disciplinary_notes">موارد انضباطی</label>
+                <textarea
+                    id="disciplinary_notes"
+                    name="disciplinary_notes"
+                    rows="4"
+                    placeholder="شرح واقعه یا مورد انضباطی..."
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="follow_up">پیگیری</label>
+                <textarea
+                    id="follow_up"
+                    name="follow_up"
+                    rows="3"
+                    placeholder="اقدامات و توضیحات مربوط به پیگیری..."
+                ></textarea>
+            </div>
+
+            <button type="submit" class="btn primary">
+                + ثبت مورد
+            </button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="section-head">
+            <div>
+                <h2>موارد ثبت‌شده</h2>
+                <p class="muted">فهرست وقایع ثبت‌شده در این روز</p>
+            </div>
+            <span class="incident-count">{{ entries|length }} مورد</span>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>نام و نام خانوادگی</th>
+                        <th>عملیات</th>
+                        <th>پایه</th>
+                        <th>رشته</th>
+                        <th>موارد انضباطی</th>
+                        <th>پیگیری</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ entry.student_name }}</td>
+                        <td>
+                            <div class="incident-entry-actions">
+                                <a
+                                    href="{% url 'edit_incident_entry' sheet.id entry.id %}"
+                                    class="btn secondary small"
+                                >
+                                    ویرایش
+                                </a>
+
+                                <form
+                                    method="post"
+                                    action="{% url 'delete_incident_entry' sheet.id entry.id %}"
+                                    onsubmit="return confirm('آیا از حذف این مورد مطمئن هستید؟');"
+                                >
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn danger small">
+                                        حذف
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                        <td>{{ entry.get_grade_display }}</td>
+                        <td>{{ entry.get_major_display }}</td>
+                        <td>{{ entry.disciplinary_notes|default:"—"|linebreaksbr }}</td>
+                        <td>{{ entry.follow_up|default:"—"|linebreaksbr }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding:30px;">
+                            هنوز موردی ثبت نشده است.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

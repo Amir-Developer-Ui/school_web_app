@@ -1,0 +1,109 @@
+
+{% extends 'base.html' %}
+
+{% block title %}دفتر ثبت وقایع{% endblock %}
+
+{% block content %}
+
+<div class="incident-page">
+
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">مدیریت انضباطی هنرستان</p>
+            <h1>دفتر ثبت وقایع</h1>
+            <p class="muted">مدیریت و مشاهده برگه‌های ثبت وقایع روزانه</p>
+        </div>
+    </div>
+
+    <section class="panel incident-create-panel">
+        <div class="section-head">
+            <div>
+                <h2>ایجاد برگه جدید</h2>
+                <p class="muted">برای ثبت وقایع امروز، برگه جدید ایجاد کنید.</p>
+            </div>
+            <span class="incident-date">{{ today }}</span>
+        </div>
+
+        <form method="post" action="{% url 'create_incident_sheet' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn primary">
+                + ایجاد برگه امروز
+            </button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="section-head">
+            <div>
+                <h2>فهرست برگه‌های روزانه</h2>
+                <p class="muted">برگه‌های ایجادشده به ترتیب تاریخ</p>
+            </div>
+            <span class="incident-count">{{ sheets|length }} برگه</span>
+        </div>
+
+        <div class="incident-list">
+
+            {% for item in sheets %}
+
+                <div class="incident-list-row">
+
+                    <div class="incident-info">
+                        <div class="incident-calendar">
+                            <span>تاریخ</span>
+                        </div>
+
+                        <div>
+                            <strong>{{ item.jalali_date }}</strong>
+                            <small>
+                                {{ item.sheet.entry_count }} مورد ثبت‌شده
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="row-actions">
+
+                        <a
+                            href="{% url 'incident_detail' item.sheet.id %}"
+                            class="btn primary small"
+                        >
+                            نمایش
+                        </a>
+
+                        <a
+                            href="{% url 'incident_detail' item.sheet.id %}?print=1"
+                            class="btn secondary small"
+                        >
+                            چاپ
+                        </a>
+
+                        <form
+                            method="post"
+                            action="{% url 'delete_incident_sheet' item.sheet.id %}"
+                            onsubmit="return confirm('آیا از حذف این برگه و تمام اطلاعات آن مطمئن هستید؟');"
+                        >
+                            {% csrf_token %}
+                            <button type="submit" class="btn danger small">
+                                حذف
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="incident-empty">
+                    <div class="incident-empty-icon">📋</div>
+                    <h3>هنوز برگه‌ای ایجاد نشده است</h3>
+                    <p>برای شروع، روی دکمه ایجاد برگه امروز کلیک کنید.</p>
+                </div>
+
+            {% endfor %}
+
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

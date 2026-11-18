@@ -11,8 +11,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.conf import settings
 import jdatetime
-from .models import SchoolClass, Student, AttendanceSession, AttendanceRecord, MAJORS, GRADES
-
+from .models import IncidentSheet, IncidentEntry, SchoolClass, Student, AttendanceSession, AttendanceRecord, MAJORS, GRADES
+from django.utils import timezone
+from django.db import IntegrityError
 
 def today_jalali():
     return jdatetime.date.fromgregorian(date=date.today()).strftime("%Y/%m/%d")
@@ -392,3 +393,160 @@ def backup(request):
     response = HttpResponse(data, content_type="application/x-sqlite3")
     response["Content-Disposition"] = f'attachment; filename="attendance-backup-{date.today().isoformat()}.sqlite3"'
     return response
+
+
+
+@login_required
+def incident_sheets(request):
+    sheets = IncidentSheet.objects.annotate(
+        entry_count=Count("entries")
+    )
+
+    sheet_rows = [
+        {
+            "sheet": sheet,
+            "jalali_date": jalali(sheet.date),
+        }
+        for sheet in sheets
+    ]
+
+    return render(request, "incidents/sheets.html", {
+        "sheets": sheet_rows,
+        "today": today_jalali(),
+    })
+
+
+
+@login_required
+def create_incident_sheet(request):
+    if request.method != "POST":
+        return redirect("incident_sheets")
+
+    today = timezone.localdate()
+
+    sheet, created = IncidentSheet.objects.get_or_create(
+        date=today
+    )
+
+    if created:
+        messages.success(request, "برگه امروز با موفقیت ایجاد شد.")
+    else:
+        messages.info(request, "برگه‌ای برای امروز از قبل وجود دارد.")
+
+    return redirect("incident_detail", sheet_id=sheet.id)
+
+
+
+@login_required
+def incident_detail(request, sheet_id):
+    sheet = get_object_or_404(IncidentSheet, id=sheet_id)
+
+    if request.method == "POST":
+        student_name = request.POST.get("student_name", "").strip()
+        grade = request.POST.get("grade", "")
+        major = request.POST.get("major", "")
+        disciplinary_notes = request.POST.get("disciplinary_notes", "").strip()
+        follow_up = request.POST.get("follow_up", "").strip()
+
+        valid_grades = {str(value) for value, label in GRADES}
+        valid_majors = {value for value, label in MAJORS}
+
+        if not student_name:
+            messages.error(request, "نام و نام خانوادگی دانش‌آموز را وارد کن.")
+        elif len(student_name) > 180:
+            messages.error(request, "نام دانش‌آموز بیش از حد طولانی است.")
+        elif grade not in valid_grades:
+            messages.error(request, "پایه تحصیلی معتبر نیست.")
+        elif major not in valid_majors:
+            messages.error(request, "رشته تحصیلی معتبر نیست.")
+        else:
+            IncidentEntry.objects.create(
+                sheet=sheet,
+                student_name=student_name,
+                grade=int(grade),
+                major=major,
+                disciplinary_notes=disciplinary_notes,
+                follow_up=follow_up,
+            )
+            messages.success(request, "مورد انضباطی با موفقیت ثبت شد.")
+            return redirect("incident_detail", sheet_id=sheet.id)
+
+    entries = sheet.entries.all()
+
+    return render(request, "incidents/detail.html", {
+        "sheet": sheet,
+        "entries": entries,
+        "grades": GRADES,
+        "majors": MAJORS,
+    })
+
+
+@login_required
+def edit_incident_entry(request, sheet_id, entry_id):
+    sheet = get_object_or_404(IncidentSheet, id=sheet_id)
+    entry = get_object_or_404(
+        IncidentEntry,
+        id=entry_id,
+        sheet=sheet
+    )
+
+    if request.method == "POST":
+        student_name = request.POST.get("student_name", "").strip()
+        grade = request.POST.get("grade", "")
+        major = request.POST.get("major", "")
+        disciplinary_notes = request.POST.get("disciplinary_notes", "").strip()
+        follow_up = request.POST.get("follow_up", "").strip()
+
+        valid_grades = {str(value) for value, label in GRADES}
+        valid_majors = {value for value, label in MAJORS}
+
+        if not student_name:
+            messages.error(request, "نام دانش‌آموز را وارد کن.")
+        elif len(student_name) > 180:
+            messages.error(request, "نام دانش‌آموز بیش از حد طولانی است.")
+        elif grade not in valid_grades:
+            messages.error(request, "پایه تحصیلی معتبر نیست.")
+        elif major not in valid_majors:
+            messages.error(request, "رشته تحصیلی معتبر نیست.")
+        else:
+            entry.student_name = student_name
+            entry.grade = int(grade)
+            entry.major = major
+            entry.disciplinary_notes = disciplinary_notes
+            entry.follow_up = follow_up
+            entry.save()
+
+            messages.success(request, "اطلاعات با موفقیت ویرایش شد.")
+            return redirect("incident_detail", sheet_id=sheet.id)
+
+    return render(request, "incidents/edit_entry.html", {
+        "sheet": sheet,
+        "entry": entry,
+        "grades": GRADES,
+        "majors": MAJORS,
+    })
+
+
+@login_required
+def delete_incident_entry(request, sheet_id, entry_id):
+    if request.method == "POST":
+        sheet = get_object_or_404(IncidentSheet, id=sheet_id)
+        entry = get_object_or_404(
+            IncidentEntry,
+            id=entry_id,
+            sheet=sheet
+        )
+        entry.delete()
+        messages.success(request, "مورد موردنظر حذف شد.")
+
+    return redirect("incident_detail", sheet_id=sheet_id)
+
+
+@login_required
+def delete_incident_sheet(request, sheet_id):
+    if request.method == "POST":
+        sheet = get_object_or_404(IncidentSheet, id=sheet_id)
+        sheet.delete()
+        messages.success(request, "برگه ثبت وقایع حذف شد.")
+
+    return redirect("incident_sheets")
