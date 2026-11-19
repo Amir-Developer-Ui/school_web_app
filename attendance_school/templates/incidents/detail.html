@@ -13,9 +13,15 @@
             <p class="muted">ثبت و پیگیری موارد انضباطی دانش‌آموزان</p>
         </div>
 
+        <div class="row-actions no-print">
+        <button type="button" class="btn primary" onclick="window.print()">
+            چاپ برگه
+        </button>
+
         <a href="{% url 'incident_sheets' %}" class="btn secondary">
             بازگشت به فهرست
         </a>
+</div>
     </div>
 
     <section class="panel">
@@ -28,7 +34,7 @@
         </div>
     </section>
 
-    <section class="panel">
+    <section class="panel no-print">
         <div class="section-head">
             <div>
                 <h2>افزودن مورد جدید</h2>
@@ -97,7 +103,12 @@
         </form>
     </section>
 
-    <section class="panel">
+    <section class="panel incident-print-area">
+        <div class="print-header">
+            <h1>برگه ثبت وقایع هنرستان</h1>
+            <p>تاریخ: {{ jalali_date }}</p>
+            <p>تعداد موارد ثبت‌شده: {{ entries|length }}</p>
+        </div>
         <div class="section-head">
             <div>
                 <h2>موارد ثبت‌شده</h2>
@@ -163,4 +174,13 @@
     </section>
 
 </div>
+{% if auto_print %}
+<script>
+    window.addEventListener("load", function () {
+        setTimeout(function () {
+            window.print();
+        }, 500);
+    });
+</script>
+{% endif %}
 {% endblock %}

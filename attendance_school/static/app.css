@@ -580,81 +580,81 @@ textarea {
 
 /* Incident Entries Table */
 .incident-page .table-wrap {
-    width: 100%;
-    overflow-x: auto;
-    border-radius: 12px;
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
 }
 
 .incident-page table {
-    width: 100%;
-    min-width: 850px;
-    border-collapse: separate;
-    border-spacing: 0;
-    text-align: right;
+  width: 100%;
+  min-width: 850px;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: right;
 }
 
 .incident-page table th,
 .incident-page table td {
-    padding: 16px 18px;
-    vertical-align: middle;
-    line-height: 1.9;
-    border-bottom: 1px solid var(--line);
+  padding: 16px 18px;
+  vertical-align: middle;
+  line-height: 1.9;
+  border-bottom: 1px solid var(--line);
 }
 
 .incident-page table th {
-    background: #f5f7fc;
-    color: var(--blue);
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
+  background: #f5f7fc;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .incident-page table td {
-    font-size: 13px;
-    color: var(--text);
+  font-size: 13px;
+  color: var(--text);
 }
 
 .incident-page table tbody tr:nth-child(even) {
-    background: #f9faff;
+  background: #f9faff;
 }
 
 .incident-page table tbody tr:hover {
-    background: #f0f5ff;
+  background: #f0f5ff;
 }
 
 .incident-page table th:first-child,
 .incident-page table td:first-child {
-    text-align: center;
-    width: 65px;
+  text-align: center;
+  width: 65px;
 }
 
 .incident-page table td:nth-child(2) {
-    min-width: 170px;
-    font-weight: 600;
+  min-width: 170px;
+  font-weight: 600;
 }
 
 .incident-page table td:nth-child(5),
 .incident-page table td:nth-child(6) {
-    min-width: 200px;
-    white-space: normal;
+  min-width: 200px;
+  white-space: normal;
 }
 
 /* Incident Entry Actions */
 .incident-entry-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    min-width: 130px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 130px;
 }
 
 .incident-entry-actions form {
-    margin: 0;
+  margin: 0;
 }
 
 .incident-entry-actions .btn {
-    min-width: 58px;
-    justify-content: center;
+  min-width: 58px;
+  justify-content: center;
 }
 
 @media(max-width:700px) {
@@ -1113,25 +1113,145 @@ textarea {
 }
 
 @media(max-width:700px) {
-    .incident-list-row {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .incident-list-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .incident-list-row .row-actions {
-        width: 100%;
-    }
+  .incident-list-row .row-actions {
+    width: 100%;
+  }
 
-    .incident-list-row .row-actions .btn {
-        flex: 1;
-    }
+  .incident-list-row .row-actions .btn {
+    flex: 1;
+  }
 
-    .incident-create-panel .section-head {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .incident-create-panel .section-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .incident-entry-actions {
-        min-width: 120px;
-    }
+  .incident-entry-actions {
+    min-width: 120px;
+  }
+}
+
+/* Incident Sheet - A4 Print */
+.print-header {
+  display: none;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+@media print {
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .topbar,
+  .nav,
+  .message,
+  .no-print {
+    display: none !important;
+  }
+
+  .container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .incident-page>*:not(.incident-print-area) {
+    display: none !important;
+  }
+
+  .incident-print-area {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #222;
+  }
+
+  .print-header h1 {
+    font-size: 20px;
+    margin: 0 0 12px;
+  }
+
+  .print-header p {
+    display: inline-block;
+    margin: 5px 15px;
+    font-size: 12px;
+  }
+
+  .incident-print-area .section-head {
+    margin-bottom: 12px;
+  }
+
+  .incident-print-area .section-head h2 {
+    font-size: 15px;
+    color: #000;
+  }
+
+  .incident-print-area .table-wrap {
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  .incident-print-area table {
+    width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: collapse !important;
+    font-size: 10px !important;
+  }
+
+  .incident-print-area table th,
+  .incident-print-area table td {
+    padding: 9px 6px !important;
+    border: 1px solid #999 !important;
+    color: #000 !important;
+    background: #fff !important;
+    font-size: 10px !important;
+    line-height: 1.7 !important;
+  }
+
+  /* حذف ستون عملیات از نسخه چاپی */
+  .incident-print-area table th:nth-child(3),
+  .incident-print-area table td:nth-child(3) {
+    display: none !important;
+  }
+
+  .incident-print-area table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .incident-print-area table thead {
+    display: table-header-group;
+  }
+
+  .incident-print-area table td:nth-child(2) {
+    min-width: 100px !important;
+  }
+
+  .incident-print-area table td:nth-child(6),
+  .incident-print-area table td:nth-child(7) {
+    min-width: 0 !important;
+  }
 }

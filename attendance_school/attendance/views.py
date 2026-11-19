@@ -191,6 +191,7 @@ def reset_data(request):
                 request, "تأیید پاک‌سازی ناموفق بود. عبارت و رمز عبور را بررسی کن.")
             return redirect("reset_data")
         with transaction.atomic():
+            IncidentSheet.objects.all().delete()
             AttendanceRecord.objects.all().delete()
             AttendanceSession.objects.all().delete()
             Student.objects.all().delete()
@@ -203,6 +204,8 @@ def reset_data(request):
         "students": Student.objects.count(),
         "sessions": AttendanceSession.objects.count(),
         "records": AttendanceRecord.objects.count(),
+        "incident_sheets": IncidentSheet.objects.count(),
+        "incident_entries": IncidentEntry.objects.count(),
     }
     return render(request, "reset_data.html", {"counts": counts})
 
@@ -478,6 +481,7 @@ def incident_detail(request, sheet_id):
         "entries": entries,
         "grades": GRADES,
         "majors": MAJORS,
+        "auto_print": request.GET.get("print") == "1",
     })
 
 
