@@ -15,6 +15,7 @@ from .models import IncidentSheet, IncidentEntry, SchoolClass, Student, Attendan
 from django.utils import timezone
 from django.db import IntegrityError
 
+
 def today_jalali():
     return jdatetime.date.fromgregorian(date=date.today()).strftime("%Y/%m/%d")
 
@@ -398,7 +399,6 @@ def backup(request):
     return response
 
 
-
 @login_required
 def incident_sheets(request):
     sheets = IncidentSheet.objects.annotate(
@@ -419,7 +419,6 @@ def incident_sheets(request):
     })
 
 
-
 @login_required
 def create_incident_sheet(request):
     if request.method != "POST":
@@ -437,7 +436,6 @@ def create_incident_sheet(request):
         messages.info(request, "برگه‌ای برای امروز از قبل وجود دارد.")
 
     return redirect("incident_detail", sheet_id=sheet.id)
-
 
 
 @login_required
@@ -554,3 +552,17 @@ def delete_incident_sheet(request, sheet_id):
         messages.success(request, "برگه ثبت وقایع حذف شد.")
 
     return redirect("incident_sheets")
+
+
+def service_worker(request):
+    sw_path = settings.BASE_DIR / "static" / "sw.js"
+
+    response = HttpResponse(
+        sw_path.read_text(encoding="utf-8"),
+        content_type="application/javascript"
+    )
+
+    response["Service-Worker-Allowed"] = "/"
+    response["Cache-Control"] = "no-cache"
+
+    return response

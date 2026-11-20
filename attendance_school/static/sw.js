@@ -1,1 +1,72 @@
-const CACHE="attendance-shell-v2";self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(["/static/app.css","/static/app.js","/static/manifest.webmanifest"]))));self.addEventListener("fetch",e=>{if(e.request.method==="GET" && new URL(e.request.url).origin===location.origin && e.request.url.includes("/static/"))e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});
+
+const CACHE = "attendance-shell-v2";
+
+const ASSETS = [
+    "/static/app.css",
+    "/static/app.js",
+    "/static/manifest.webmanifest"
+];
+
+
+self.addEventListener("install", event => {
+    event.waitUntil(
+        caches.open(CACHE)
+            .then(cache => cache.addAll(ASSETS))
+            .then(() => self.skipWaiting())
+    );
+});
+
+
+self.addEventListener("activate", event => {
+    event.waitUntil(
+        caches.keys()
+            .then(keys =>
+                Promise.all(
+                    keys
+                        .filter(key =>
+                            key.startsWith("attendance-shell-") &&
+                            key !== CACHE
+                        )
+                        .map(key => caches.delete(key))
+                )
+            )
+            .then(() => self.clients.claim())
+    );
+});
+
+
+self.addEventListener("fetch", event => {
+    const request = event.request;
+    const url = new URL(request.url);
+
+    if (
+        request.method !== "GET" ||
+        url.origin !== self.location.origin ||
+        !url.pathname.startsWith("/static/")
+    ) {
+        return;
+    }
+
+    event.respondWith(
+        (async () => {
+            const cache = await caches.open(CACHE);
+
+            try {
+                const response = await fetch(request, {
+                    cache: "no-cache"
+                });
+
+                if (response.ok) {
+                    await cache.put(request, response.clone());
+                }
+
+                return response;
+
+            } catch (error) {
+                const cached = await cache.match(request);
+
+                return cached || Response.error();
+            }
+        })()
+    );
+});
